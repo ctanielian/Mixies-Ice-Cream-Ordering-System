@@ -13,7 +13,7 @@ public class MixiesAppFrame extends JFrame {
         JTabbedPane tabs = new JTabbedPane();
         tabs.addTab("Employee Orders", new EmployeeOrderPanel(service, loggedInEmployee));
 
-        if ("Manager".equalsIgnoreCase(loggedInEmployee.getEmployeeRole())) {
+        if (loggedInEmployee.getEmployeeRole() == employeeRoles.MANAGER) {
             tabs.addTab("Manager", new ManagerPanel(service, loggedInEmployee));
         }
 
@@ -22,7 +22,7 @@ public class MixiesAppFrame extends JFrame {
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            Employee loggedIn = new Employee(1, "Ava", "Manager");
+            Employee loggedIn = new Employee(1, "Ava", employeeRoles.MANAGER);
             new MixiesAppFrame(loggedIn).setVisible(true);
         });
     }
