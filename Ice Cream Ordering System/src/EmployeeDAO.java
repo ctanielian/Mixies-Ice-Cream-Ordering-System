@@ -6,7 +6,7 @@ public class EmployeeDAO {
         String sql = "SELECT * FROM Employee WHERE employeeID = ?";
 
         try (Connection conn = DBConnection.getConnection();
-                PreparedStatement stmt = conn.prepareStatement(sql)) {
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, employeeID);
 
@@ -15,7 +15,8 @@ public class EmployeeDAO {
                     return new Employee(
                             rs.getInt("employeeID"),
                             rs.getString("employeeName"),
-                            rs.getString("employeeRole"));
+                            employeeRoles.valueOf(rs.getString("employeeRole").toUpperCase())
+                    );
                 }
             }
         } catch (SQLException e) {
