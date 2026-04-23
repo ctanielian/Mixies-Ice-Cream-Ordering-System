@@ -18,17 +18,16 @@ public class MixiesAppFrame extends JFrame {
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
 
-        // Default tabs
         tabs.addTab("Employee Orders", new EmployeeOrderPanel(service, loggedInEmployee));
         tabs.addTab("Orders", new OrdersPanel(service));
 
-        // Top bar
         JButton managerAccessButton = new JButton("Manager Access");
         managerAccessButton.addActionListener(e -> openManagerAccess());
 
         JLabel loggedInLabel = new JLabel(
                 "Logged in: " + loggedInEmployee.getEmployeeName() +
-                        " (" + loggedInEmployee.getEmployeeRole() + ")");
+                " (" + loggedInEmployee.getEmployeeRole() + ")"
+        );
 
         JPanel topPanel = new JPanel(new BorderLayout());
         topPanel.add(loggedInLabel, BorderLayout.WEST);
@@ -41,8 +40,10 @@ public class MixiesAppFrame extends JFrame {
         add(tabs, BorderLayout.CENTER);
     }
 
-        if (loggedInEmployee.getEmployeeRole() == employeeRoles.MANAGER) {
-            tabs.addTab("Manager", new ManagerPanel(service, loggedInEmployee));
+    private void openManagerAccess() {
+        String input = JOptionPane.showInputDialog(this, "Enter employee ID:");
+        if (input == null || input.isBlank()) {
+            return;
         }
 
         try {
@@ -73,17 +74,10 @@ public class MixiesAppFrame extends JFrame {
         }
     }
 
-    public MixiesAppFrame() {
-        MixiesService service = new MixiesService();
-
-        setTitle("Mixies Ice Cream System");
-        setSize(1000, 650);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
-
-        JTabbedPane tabs = new JTabbedPane();
-        tabs.addTab("Ice Cream Flavors", new IceCreamFlavorPanel(service, new OrderItem(0, 0, null, 0, 0.0, "None")));
-        add(tabs);
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            Employee loggedIn = new Employee(1, "Ava", "Employee");
+            new MixiesAppFrame(loggedIn).setVisible(true);
+        });
     }
-
 }
