@@ -55,7 +55,7 @@ public class MixiesAppFrame extends JFrame {
                 return;
             }
 
-            if (!"Manager".equalsIgnoreCase(manager.getEmployeeRole())) {
+            if (manager.getEmployeeRole() != employeeRoles.MANAGER) {
                 JOptionPane.showMessageDialog(this, "Access denied. Employee is not a manager.");
                 return;
             }
