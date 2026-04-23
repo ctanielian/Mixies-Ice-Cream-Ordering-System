@@ -81,7 +81,17 @@ VALUES (1, 'Ava', 'Manager');
 INSERT INTO icecreamflavor (flavorName, seasonality, stockLevel, remakeThreshold, allergens, availabilityStatus)
 VALUES 
 ('Vanilla', 'All Year', 10, 3, 'Milk', 'Available'),
-('Chocolate', 'All Year', 8, 3, 'Milk', 'Available');
+('Chocolate', 'All Year', 8, 3, 'Milk', 'Available'),
+('Cookie n Cream', 'All Year', 9, 3, 'Milk', 'Available'),
+('Mint Chocolate Chip', 'All Year', 8, 3, 'Milk', 'Available'),
+('Strawberry', 'All Year', 4, 3, 'Milk', 'Available'),
+('Cotton Candy', 'All Year', 6, 3, 'Milk', 'Available'),
+('Coffee', 'All Year', 9, 3, 'Milk', 'Available'),
+('Salted Caramel', 'All Year', 9, 3, 'Milk', 'Available'),
+('Pistachio', 'All Year', 9, 3, 'Milk', 'Available'),
+('Coconut', 'All Year', 9, 3, 'N/A', 'Available'),
+('Rocky Road', 'All Year', 9, 3, 'Milk', 'Available'),
+('Butter Pecan', 'All Year', 9, 3, 'Milk', 'Available');
 
 INSERT INTO topping (toppingName)
 VALUES 
