@@ -20,10 +20,17 @@ public class MixiesAppFrame extends JFrame {
         add(tabs);
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            Employee loggedIn = new Employee(1, "Ava", employeeRoles.MANAGER);
-            new MixiesAppFrame(loggedIn).setVisible(true);
-        });
+    public MixiesAppFrame() {
+        MixiesService service = new MixiesService();
+
+        setTitle("Mixies Ice Cream System");
+        setSize(1000, 650);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
+
+        JTabbedPane tabs = new JTabbedPane();
+        tabs.addTab("Ice Cream Flavors", new IceCreamFlavorPanel(service, new OrderItem(0, 0, null, 0, 0.0, "None")));
+        add(tabs);
     }
+
 }
