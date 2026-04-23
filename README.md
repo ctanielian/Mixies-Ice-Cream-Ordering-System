@@ -1,7 +1,7 @@
 # Mixies-Ice-Cream-Ordering-System
 CS3560 Group 6 Project
 
-# Running the Project
+## Running the Project
 
 1. Make sure you have Java installed
 2. Make sure MySQL is running
