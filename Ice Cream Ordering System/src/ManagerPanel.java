@@ -1,31 +1,57 @@
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * ManagerPanel provides a user interface for managers to manage
+ * ice cream flavors and toppings in the system.
+ *
+ * Features include:
+ * - Viewing all flavors and toppings
+ * - Creating and removing flavors
+ * - Updating stock levels and seasonality
+ * - Creating and removing toppings
+ *
+ * This panel interacts with the MixiesService to perform all
+ * data operations and updates the UI accordingly.
+ */
 public class ManagerPanel extends JPanel {
+
+    // Service layer for handling business logic and database operations
     private final MixiesService service;
+
+    // Currently logged-in employee (must be a manager)
     private final Employee loggedInEmployee;
 
+    // Model and list for displaying ice cream flavors
     private final DefaultListModel<IceCreamFlavor> flavorModel = new DefaultListModel<>();
     private final JList<IceCreamFlavor> flavorList = new JList<>(flavorModel);
 
+    // Model and list for displaying toppings
     private final DefaultListModel<Topping> toppingModel = new DefaultListModel<>();
     private final JList<Topping> toppingList = new JList<>(toppingModel);
 
+    /**
+     * Constructor initializes UI components and sets up event listeners.
+     */
     public ManagerPanel(MixiesService service, Employee loggedInEmployee) {
         this.service = service;
         this.loggedInEmployee = loggedInEmployee;
 
         setLayout(new BorderLayout());
 
+        // Custom renderer to display flavor details (stock, status, etc.)
         flavorList.setCellRenderer(new FlavorListCellRenderer());
 
+        // Split pane to show flavors (left) and toppings (right)
         JSplitPane splitPane = new JSplitPane(
                 JSplitPane.HORIZONTAL_SPLIT,
                 new JScrollPane(flavorList),
                 new JScrollPane(toppingList));
         splitPane.setResizeWeight(0.7);
 
+        // Panel for action buttons
         JPanel buttonPanel = new JPanel(new GridLayout(3, 3, 10, 10));
+
         JButton refreshBtn = new JButton("Refresh");
         JButton addFlavorBtn = new JButton("Create Flavor");
         JButton removeFlavorBtn = new JButton("Remove Flavor");
@@ -34,6 +60,7 @@ public class ManagerPanel extends JPanel {
         JButton addToppingBtn = new JButton("Create Topping");
         JButton removeToppingBtn = new JButton("Remove Topping");
 
+        // Add buttons to panel
         buttonPanel.add(refreshBtn);
         buttonPanel.add(addFlavorBtn);
         buttonPanel.add(removeFlavorBtn);
@@ -42,9 +69,11 @@ public class ManagerPanel extends JPanel {
         buttonPanel.add(addToppingBtn);
         buttonPanel.add(removeToppingBtn);
 
+        // Add components to main panel
         add(splitPane, BorderLayout.CENTER);
         add(buttonPanel, BorderLayout.SOUTH);
 
+        // Button event handlers
         refreshBtn.addActionListener(e -> refreshData());
         addFlavorBtn.addActionListener(e -> createFlavor());
         removeFlavorBtn.addActionListener(e -> removeFlavor());
@@ -53,9 +82,13 @@ public class ManagerPanel extends JPanel {
         addToppingBtn.addActionListener(e -> createTopping());
         removeToppingBtn.addActionListener(e -> removeTopping());
 
+        // Initial data load
         refreshData();
     }
 
+    /**
+     * Reloads all flavors and toppings into their respective lists.
+     */
     private void refreshData() {
         flavorModel.clear();
         toppingModel.clear();
@@ -69,6 +102,9 @@ public class ManagerPanel extends JPanel {
         }
     }
 
+    /**
+     * Opens a dialog to create a new ice cream flavor.
+     */
     private void createFlavor() {
         JTextField nameField = new JTextField();
         JTextField seasonalityField = new JTextField();
@@ -76,6 +112,7 @@ public class ManagerPanel extends JPanel {
         JTextField thresholdField = new JTextField();
         JTextField allergensField = new JTextField();
 
+        // Input form fields
         Object[] fields = {
                 "Flavor Name:", nameField,
                 "Seasonality:", seasonalityField,
@@ -89,9 +126,11 @@ public class ManagerPanel extends JPanel {
 
         if (result == JOptionPane.OK_OPTION) {
             try {
+                // Parse numeric inputs
                 int stockLevel = Integer.parseInt(stockField.getText().trim());
                 int threshold = Integer.parseInt(thresholdField.getText().trim());
 
+                // Create flavor via service
                 boolean ok = service.createFlavor(
                         loggedInEmployee,
                         nameField.getText().trim(),
@@ -105,30 +144,43 @@ public class ManagerPanel extends JPanel {
                 refreshData();
 
             } catch (NumberFormatException ex) {
+                // Handle invalid number input
                 JOptionPane.showMessageDialog(this, "Stock and threshold must be numbers.");
             }
         }
     }
 
+    /**
+     * Removes the selected flavor from the system.
+     */
     private void removeFlavor() {
         IceCreamFlavor selected = flavorList.getSelectedValue();
+
         if (selected == null) {
             JOptionPane.showMessageDialog(this, "Select a flavor first.");
             return;
         }
 
         boolean ok = service.removeFlavor(loggedInEmployee, selected.getFlavorID());
-        JOptionPane.showMessageDialog(this, ok ? "Flavor removed." : "Failed. Flavor may be referenced by orders.");
+
+        JOptionPane.showMessageDialog(this,
+                ok ? "Flavor removed." : "Failed. Flavor may be referenced by orders.");
+
         refreshData();
     }
 
+    /**
+     * Updates the stock level of the selected flavor.
+     */
     private void updateStock() {
         IceCreamFlavor selected = flavorList.getSelectedValue();
+
         if (selected == null) {
             JOptionPane.showMessageDialog(this, "Select a flavor first.");
             return;
         }
 
+        // Prompt user for new stock value
         String input = JOptionPane.showInputDialog(this,
                 "Enter new stock level:", selected.getStockLevel());
 
@@ -144,7 +196,9 @@ public class ManagerPanel extends JPanel {
                 return;
             }
 
-            boolean ok = service.updateFlavorStock(loggedInEmployee, selected.getFlavorID(), newStock);
+            boolean ok = service.updateFlavorStock(
+                    loggedInEmployee, selected.getFlavorID(), newStock);
+
             JOptionPane.showMessageDialog(this, ok ? "Stock updated." : "Failed.");
             refreshData();
 
@@ -153,13 +207,18 @@ public class ManagerPanel extends JPanel {
         }
     }
 
+    /**
+     * Updates the seasonality value of the selected flavor.
+     */
     private void updateSeasonality() {
         IceCreamFlavor selected = flavorList.getSelectedValue();
+
         if (selected == null) {
             JOptionPane.showMessageDialog(this, "Select a flavor first.");
             return;
         }
 
+        // Prompt user for new seasonality value
         String newValue = JOptionPane.showInputDialog(this,
                 "Enter new seasonality:", selected.getSeasonality());
 
@@ -167,31 +226,45 @@ public class ManagerPanel extends JPanel {
             return;
         }
 
-        boolean ok = service.updateFlavorSeasonality(loggedInEmployee, selected.getFlavorID(), newValue.trim());
+        boolean ok = service.updateFlavorSeasonality(
+                loggedInEmployee, selected.getFlavorID(), newValue.trim());
+
         JOptionPane.showMessageDialog(this, ok ? "Seasonality updated." : "Failed.");
         refreshData();
     }
 
+    /**
+     * Creates a new topping.
+     */
     private void createTopping() {
         String name = JOptionPane.showInputDialog(this, "Enter topping name:");
+
         if (name == null || name.isBlank()) {
             return;
         }
 
         boolean ok = service.createTopping(loggedInEmployee, name.trim());
+
         JOptionPane.showMessageDialog(this, ok ? "Topping created." : "Failed.");
         refreshData();
     }
 
+    /**
+     * Removes the selected topping.
+     */
     private void removeTopping() {
         Topping selected = toppingList.getSelectedValue();
+
         if (selected == null) {
             JOptionPane.showMessageDialog(this, "Select a topping first.");
             return;
         }
 
         boolean ok = service.removeTopping(loggedInEmployee, selected.getToppingID());
-        JOptionPane.showMessageDialog(this, ok ? "Topping removed." : "Failed. Topping may be referenced by orders.");
+
+        JOptionPane.showMessageDialog(this,
+                ok ? "Topping removed." : "Failed. Topping may be referenced by orders.");
+
         refreshData();
     }
 }

@@ -2,8 +2,24 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * OrderDAO handles all database operations related to orders,
+ * order items, and toppings associated with order items.
+ * 
+ * Responsibilities include:
+ * - Creating and retrieving orders
+ * - Adding order items and toppings
+ * - Calculating totals
+ * - Updating order status and refunds
+ */
 public class OrderDAO {
 
+    /**
+     * Creates a new order in the database.
+     * Automatically sets the order date and initial status to "Open".
+     * 
+     * @return the generated order ID, or -1 if failed
+     */
     public int createOrder(int employeeID, double tip, double total) {
         String sql = "INSERT INTO Orders (employeeID, orderDate, tip, total, orderStatus) VALUES (?, NOW(), ?, ?, 'Open')";
 
@@ -15,6 +31,7 @@ public class OrderDAO {
             stmt.setDouble(3, total);
             stmt.executeUpdate();
 
+            // Retrieve auto-generated order ID
             try (ResultSet rs = stmt.getGeneratedKeys()) {
                 if (rs.next()) {
                     return rs.getInt(1);
@@ -27,6 +44,9 @@ public class OrderDAO {
         return -1;
     }
 
+    /**
+     * Retrieves an order by its ID.
+     */
     public Order getOrderById(int orderID) {
         String sql = "SELECT * FROM Orders WHERE orderID = ?";
 
@@ -53,6 +73,11 @@ public class OrderDAO {
         return null;
     }
 
+    /**
+     * Adds a new item to an order.
+     * 
+     * @return the generated orderItemID, or -1 if failed
+     */
     public int addOrderItem(int orderID, int flavorID, int quantity, double itemCost) {
         String sql = """
                 INSERT INTO OrderItem (orderID, flavorID, quantity, itemCost, refundStatus)
@@ -68,6 +93,7 @@ public class OrderDAO {
             stmt.setDouble(4, itemCost);
             stmt.executeUpdate();
 
+            // Return generated order item ID
             try (ResultSet rs = stmt.getGeneratedKeys()) {
                 if (rs.next()) {
                     return rs.getInt(1);
@@ -80,6 +106,9 @@ public class OrderDAO {
         return -1;
     }
 
+    /**
+     * Adds a topping to a specific order item.
+     */
     public boolean addOrderItemTopping(int orderItemID, int toppingID, int toppingQuantity) {
         String sql = """
                 INSERT INTO OrderItemTopping (orderItemID, toppingID, toppingQuantity)
@@ -100,6 +129,9 @@ public class OrderDAO {
         }
     }
 
+    /**
+     * Marks an order item as refunded if the order is completed.
+     */
     public boolean refundOrderItem(int orderItemID) {
         String sql = """
                 UPDATE OrderItem oi
@@ -120,6 +152,9 @@ public class OrderDAO {
         }
     }
 
+    /**
+     * Retrieves all order items for a given order.
+     */
     public List<OrderItem> getOrderItemsForOrder(int orderID, FlavorDAO flavorDAO) {
         List<OrderItem> items = new ArrayList<>();
         String sql = "SELECT * FROM OrderItem WHERE orderID = ? ORDER BY orderItemID";
@@ -131,7 +166,10 @@ public class OrderDAO {
 
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
+
+                    // Retrieve flavor object using FlavorDAO
                     IceCreamFlavor flavor = flavorDAO.getFlavorById(rs.getInt("flavorID"));
+
                     if (flavor != null) {
                         items.add(new OrderItem(
                                 rs.getInt("orderItemID"),
@@ -150,6 +188,9 @@ public class OrderDAO {
         return items;
     }
 
+    /**
+     * Calculates total cost of all non-refunded items in an order.
+     */
     public double calculateOrderTotal(int orderID) {
         String sql = """
                 SELECT COALESCE(SUM(quantity * itemCost), 0) AS total
@@ -174,6 +215,9 @@ public class OrderDAO {
         return 0.0;
     }
 
+    /**
+     * Updates the total cost of an order.
+     */
     public boolean updateOrderTotal(int orderID, double newTotal) {
         String sql = "UPDATE Orders SET total = ? WHERE orderID = ?";
 
@@ -190,6 +234,9 @@ public class OrderDAO {
         }
     }
 
+    /**
+     * Marks an order as completed.
+     */
     public boolean concludeOrder(int orderID) {
         String sql = "UPDATE Orders SET orderStatus = 'Completed' WHERE orderID = ? AND orderStatus = 'Open'";
 
@@ -205,6 +252,9 @@ public class OrderDAO {
         }
     }
 
+    /**
+     * Retrieves the order ID associated with a given order item.
+     */
     public Integer getOrderIdByOrderItemId(int orderItemID) {
         String sql = "SELECT orderID FROM OrderItem WHERE orderItemID = ?";
 
@@ -225,6 +275,9 @@ public class OrderDAO {
         return null;
     }
 
+    /**
+     * Calculates total cost of toppings for an entire order.
+     */
     public double calculateOrderToppingTotal(int orderID) {
         String sql = """
                 SELECT COALESCE(SUM(oit.toppingQuantity * ?), 0) AS toppingTotal
@@ -251,6 +304,9 @@ public class OrderDAO {
         return 0.0;
     }
 
+    /**
+     * Calculates total cost of toppings for a specific order item.
+     */
     public double calculateToppingTotalForOrderItem(int orderItemID) {
         String sql = """
                 SELECT COALESCE(SUM(toppingQuantity * ?), 0) AS toppingTotal
@@ -276,6 +332,9 @@ public class OrderDAO {
         return 0.0;
     }
 
+    /**
+     * Retrieves all orders sorted by most recent first.
+     */
     public List<Order> getAllOrders() {
         List<Order> orders = new ArrayList<>();
         String sql = "SELECT * FROM Orders ORDER BY orderID DESC";
