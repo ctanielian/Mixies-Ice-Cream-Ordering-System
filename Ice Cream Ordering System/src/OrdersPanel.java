@@ -64,7 +64,7 @@ public class OrdersPanel extends JPanel {
     /**
      * Reloads all orders from the service and updates the table.
      */
-    private void refreshOrders() {
+    public void refreshOrders() {
 
         // Clear existing rows
         ordersTableModel.setRowCount(0);

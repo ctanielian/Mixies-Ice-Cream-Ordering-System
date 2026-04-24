@@ -26,6 +26,8 @@ public class MixiesAppFrame extends JFrame {
     // Tabbed pane for switching between different views
     private final JTabbedPane tabs;
 
+    private final OrdersPanel ordersPanel;
+
     /**
      * Constructor initializes the main application frame and UI components.
      */
@@ -33,6 +35,11 @@ public class MixiesAppFrame extends JFrame {
         this.loggedInEmployee = loggedInEmployee;
         this.service = new MixiesService();
         this.tabs = new JTabbedPane();
+        this.ordersPanel = new OrdersPanel(service);
+
+        tabs.addTab("Employee Orders", new EmployeeOrderPanel(service, loggedInEmployee));
+        tabs.addTab("Orders", ordersPanel);
+        tabs.addTab("Kiosk Menu", new KioskPanel(service, loggedInEmployee, ordersPanel));
 
         // Frame settings
         setTitle("Mixies Ice Cream System");
@@ -40,11 +47,7 @@ public class MixiesAppFrame extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
-
-        // Add default tabs
-        tabs.addTab("Employee Orders", new EmployeeOrderPanel(service, loggedInEmployee));
-        tabs.addTab("Orders", new OrdersPanel(service));
-
+    
         // Button to access manager panel
         JButton managerAccessButton = new JButton("Manager Access");
         managerAccessButton.addActionListener(e -> openManagerAccess());
@@ -130,7 +133,7 @@ public class MixiesAppFrame extends JFrame {
 
         if (existingTabIndex == -1) {
             // Create new Kiosk Menu tab
-            tabs.addTab("Kiosk Menu", new IceCreamFlavorPanel(service));
+            tabs.addTab("Kiosk Menu", new KioskPanel(service, loggedInEmployee, ordersPanel));
             tabs.setSelectedIndex(tabs.getTabCount() - 1);
         } else {
             // Switch to existing tab

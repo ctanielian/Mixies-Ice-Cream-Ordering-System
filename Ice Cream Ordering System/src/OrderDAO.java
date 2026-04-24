@@ -73,6 +73,26 @@ public class OrderDAO {
         return null;
     }
 
+    public double getOrderTip(int orderID) {
+        String sql = "SELECT tip FROM Orders WHERE orderID = ?";
+
+        try (Connection conn = DBConnection.getConnection();
+            PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, orderID);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getDouble("tip");
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return 0.0;
+    }
+
     /**
      * Adds a new item to an order.
      * 
@@ -357,5 +377,19 @@ public class OrderDAO {
         }
 
         return orders;
+    }
+
+    public boolean updateOrderTip(int orderID, double tip) {
+        String sql = "UPDATE Orders SET tip = ? WHERE orderID = ?";
+
+        try (Connection conn = DBConnection.getConnection();
+            PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setDouble(1, tip);
+            stmt.setInt(2, orderID);
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 }
