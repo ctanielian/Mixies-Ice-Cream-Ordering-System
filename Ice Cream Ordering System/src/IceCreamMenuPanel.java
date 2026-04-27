@@ -1,43 +1,35 @@
 import javax.swing.*;
 import java.awt.*;
 
-/**
- * IceCreamFlavorPanel displays all available ice cream flavors
- * in a scrollable grid layout. Each flavor is shown as a card
- * containing an image, name, and an "Add to Order" button.
- *
- * This panel retrieves flavor data from the MixiesService
- * and dynamically builds the UI based on available flavors.
- */
-public class IceCreamFlavorPanel extends JPanel {
-
+// Ice Cream Menu Panel
+// Displays all available ice cream flavors
+// Implementing a grid layout and scrollablity
+public class IceCreamMenuPanel extends JPanel {
     // Service used to fetch flavor data
     public final MixiesService service;
     
-    /**
-     * Constructor initializes the panel layout and populates
-     * it with flavor cards.
-     */
-    public IceCreamFlavorPanel(MixiesService service) {
+    // Main panel
+    // With 
+    public IceCreamMenuPanel(MixiesService service) {
         this.service = service;
         
         // Set main layout and background color
         setLayout(new BorderLayout());
         setBackground(new Color(245, 245, 245));
 
-        // Panel that will hold all flavor cards in a grid
+        // Panel for flavor cards
         JPanel flavorGrid = new JPanel(new GridBagLayout());
         flavorGrid.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20)); 
         flavorGrid.setBackground(new Color(245, 245, 245));
         
-        // Constraints for positioning cards in the grid
+        // Card position
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 10, 10, 10);
         gbc.anchor = GridBagConstraints.NORTHWEST;
 
         int col = 0;
         int row = 0;
-        int maxCol = 3; // Maximum number of columns per row
+        int maxCol = 3; 
 
         // Fetch flavors from the service and create cards
         for (IceCreamFlavor flavor : service.getAllFlavors()) {
@@ -51,6 +43,7 @@ public class IceCreamFlavorPanel extends JPanel {
                 // Add a flavor card to the grid
                 flavorGrid.add(createFlavorCard(flavor), gbc);
 
+                // Increment
                 col++;
 
                 // Move to next row after reaching max columns
@@ -61,13 +54,12 @@ public class IceCreamFlavorPanel extends JPanel {
             }
         }
 
-        // Add vertical space at the bottom so items align nicely
+        // Vertical scrolling support
         gbc.gridx = 0;
         gbc.gridy = row + 1;
         gbc.weighty = 1.0;
         flavorGrid.add(Box.createVerticalGlue(), gbc);
 
-        // Wrap grid in a scroll pane for vertical scrolling
         JScrollPane scrollPane = new JScrollPane(flavorGrid);
         scrollPane.getVerticalScrollBar().setUnitIncrement(16);
 
@@ -75,13 +67,9 @@ public class IceCreamFlavorPanel extends JPanel {
         add(scrollPane, BorderLayout.CENTER);
     }
 
-    /**
-     * Creates a visual card for a single ice cream flavor.
-     * Each card includes:
-     * - Flavor name
-     * - Flavor image
-     * - "Add to Order" button
-     */
+
+    // Creates a card for flavors
+    // Get an image and display it
     private JPanel createFlavorCard(IceCreamFlavor flavor) {
 
         // Panel representing one flavor card
