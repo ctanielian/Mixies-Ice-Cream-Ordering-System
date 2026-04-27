@@ -1,7 +1,7 @@
-import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.*;
 
 /**
  * KioskPanel represents the customer-facing kiosk UI.
@@ -202,11 +202,17 @@ public class KioskPanel extends JPanel {
 
         // Scoop selection
         JPanel scoopPanel = new JPanel();
+        scoopPanel.setLayout(new GridLayout(0, 1));
         scoopPanel.setBorder(BorderFactory.createTitledBorder("Scoops"));
 
-        JButton one = new JButton("1");
-        JButton two = new JButton("2");
-        JButton three = new JButton("3");
+        JRadioButton one = new JRadioButton("1");
+        JRadioButton two = new JRadioButton("2");
+        JRadioButton three = new JRadioButton("3");
+        ButtonGroup scoopGroup = new ButtonGroup();
+        scoopGroup.add(one);
+        scoopGroup.add(two);
+        scoopGroup.add(three);
+        one.setSelected(true);
 
         one.addActionListener(e -> selectedScoops = 1);
         two.addActionListener(e -> selectedScoops = 2);
@@ -270,14 +276,38 @@ public class KioskPanel extends JPanel {
         JPanel tipPanel = new JPanel();
         tipPanel.setBorder(BorderFactory.createTitledBorder("Tip"));
 
-        JButton zero = new JButton("0%");
-        JButton five = new JButton("5%");
-        JButton ten = new JButton("10%");
+        JRadioButton zero = new JRadioButton("0%");
+        JRadioButton five = new JRadioButton("5%");
+        JRadioButton ten = new JRadioButton("10%");
+        JRadioButton customTipButton = new JRadioButton("Custom:");
+        ButtonGroup tipGroup = new ButtonGroup();
+        tipGroup.add(customTipButton);
+        tipGroup.add(zero);
+        tipGroup.add(five);
+        tipGroup.add(ten);
+        zero.setSelected(true);
+        
+        // Custom tip as an option with text field that updates tip percentage when text changed using listener
+        JTextField customTipField = new JTextField(5);
+        customTipField.setText("0");
+        customTipField.addActionListener(e -> {
+            try {
+                double customPercent = Double.parseDouble(customTipField.getText()) / 100.0;
+                //Clamp custom percent to 0% to 100%
+                if (customPercent < 0) customPercent = 0;
+                if (customPercent > 1) customPercent = 1;
+                setTipPercent(customPercent);
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(this, "Enter a valid number for custom tip.");
+            }
+        });
 
         zero.addActionListener(e -> setTipPercent(0.0));
         five.addActionListener(e -> setTipPercent(0.05));
         ten.addActionListener(e -> setTipPercent(0.10));
 
+        tipPanel.add(customTipButton);
+        tipPanel.add(customTipField);
         tipPanel.add(zero);
         tipPanel.add(five);
         tipPanel.add(ten);
@@ -302,9 +332,11 @@ public class KioskPanel extends JPanel {
         panel.add(new JScrollPane(checkoutList), BorderLayout.CENTER);
         panel.add(tipPanel, BorderLayout.WEST);
 
-        // NOTE: These overlap (should ideally be combined into one panel)
-        panel.add(totalsPanel, BorderLayout.SOUTH);
-        panel.add(bottom, BorderLayout.PAGE_END);
+        // Fix overlapping by putting totals and buttons in a separate panel at the bottom
+        JPanel bottomPanel = new JPanel(new BorderLayout());
+        bottomPanel.add(totalsPanel, BorderLayout.CENTER);
+        bottomPanel.add(bottom, BorderLayout.SOUTH);
+        panel.add(bottomPanel, BorderLayout.PAGE_END);
 
         return panel;
     }
