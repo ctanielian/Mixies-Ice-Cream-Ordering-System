@@ -11,6 +11,10 @@ public class IceCreamMenuPanel extends JPanel {
     // Main panel
     public IceCreamMenuPanel(MixiesService service) {
         this.service = service;
+
+        // Set main layout and background color
+        setLayout(new BorderLayout());
+        setBackground(new Color(245, 245, 245));
         
         // Header
         JLabel header = new JLabel("Mixies Ice Cream", SwingConstants.CENTER);
@@ -22,21 +26,19 @@ public class IceCreamMenuPanel extends JPanel {
         // Cart button action
         cartButton.addActionListener(e -> {
             // go to cart panel
-        });
-
-        // Header panel
-        JPanel HeaderPanel = new JPanel(new BorderLayout());
-        HeaderPanel.add(header, BorderLayout.CENTER);
-        HeaderPanel.add(cartButton, BorderLayout.EAST);
-
-        // Set main layout and background color
-        setLayout(new BorderLayout());
-        setBackground(new Color(245, 245, 245));
+        });        
 
         // Panel for flavor cards
         JPanel flavorGrid = new JPanel(new GridBagLayout());
         flavorGrid.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20)); 
         flavorGrid.setBackground(new Color(245, 245, 245));
+
+        // Add header panel
+        JPanel topPanel = new JPanel(new BorderLayout());
+        topPanel.setBackground(new Color(245, 245, 245));
+        topPanel.add(header, BorderLayout.CENTER);
+        topPanel.add(cartButton, BorderLayout.EAST);
+        add(topPanel, BorderLayout.NORTH);
 
         // Card position
         GridBagConstraints gbc = new GridBagConstraints();
@@ -137,7 +139,7 @@ public class IceCreamMenuPanel extends JPanel {
             // Check stock before adding
             if (flavor.getStockLevel() > 0) {
                 // Open customization panel
-                
+
             } else {
                 // Show message if flavor is out of stock
                 JOptionPane.showMessageDialog(this, 
