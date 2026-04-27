@@ -9,10 +9,26 @@ public class IceCreamMenuPanel extends JPanel {
     public final MixiesService service;
     
     // Main panel
-    // With 
     public IceCreamMenuPanel(MixiesService service) {
         this.service = service;
         
+        // Header
+        JLabel header = new JLabel("Mixies Ice Cream", SwingConstants.CENTER);
+        header.setFont(new Font("SansSerif", Font.BOLD, 22));
+
+        // Cart button
+        JButton cartButton = new JButton("Cart/Checkout");
+        
+        // Cart button action
+        cartButton.addActionListener(e -> {
+            // go to cart panel
+        });
+
+        // Header panel
+        JPanel HeaderPanel = new JPanel(new BorderLayout());
+        HeaderPanel.add(header, BorderLayout.CENTER);
+        HeaderPanel.add(cartButton, BorderLayout.EAST);
+
         // Set main layout and background color
         setLayout(new BorderLayout());
         setBackground(new Color(245, 245, 245));
@@ -21,7 +37,7 @@ public class IceCreamMenuPanel extends JPanel {
         JPanel flavorGrid = new JPanel(new GridBagLayout());
         flavorGrid.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20)); 
         flavorGrid.setBackground(new Color(245, 245, 245));
-        
+
         // Card position
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 10, 10, 10);
@@ -30,6 +46,7 @@ public class IceCreamMenuPanel extends JPanel {
         int col = 0;
         int row = 0;
         int maxCol = 3; 
+        
 
         // Fetch flavors from the service and create cards
         for (IceCreamFlavor flavor : service.getAllFlavors()) {
@@ -84,6 +101,7 @@ public class IceCreamMenuPanel extends JPanel {
 
         // Load flavor image
         ImageIcon icon = null;
+        JLabel imageLabel = new JLabel();
         try {
             // Build image file path based on flavor name
             String path = "src/images/" + flavor.getFlavorName()
@@ -96,7 +114,9 @@ public class IceCreamMenuPanel extends JPanel {
 
             if (img != null) {
                 icon = new ImageIcon(img);
+                imageLabel = new JLabel(icon);
             } else {
+                imageLabel = new JLabel("No Image", SwingConstants.CENTER);
                 // Debug message if image is missing
                 System.out.println("Image not found for flavor: " + flavor.getFlavorName());
             }
@@ -106,27 +126,22 @@ public class IceCreamMenuPanel extends JPanel {
         }
 
         // Label to display the image
-        JLabel imageLabel = new JLabel(icon);
         imageLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
         // Label to display the flavor name
         JLabel nameLabel = new JLabel(flavor.getFlavorName(), SwingConstants.CENTER);
         
         // Button to add flavor to order
-        JButton addButton = new JButton("Add to Order");
+        JButton addButton = new JButton("Customize");
         addButton.addActionListener(e -> {
-
             // Check stock before adding
             if (flavor.getStockLevel() > 0) {
-                // Placeholder for actual order logic
-                // CustomOrderItem.addItem(flavor);
-
-                JOptionPane.showMessageDialog(this, 
-                    flavor.getFlavorName() + " added to order!");
+                // Open customization panel
+                
             } else {
                 // Show message if flavor is out of stock
                 JOptionPane.showMessageDialog(this, 
-                    flavor.getFlavorName() + " is out of stock.");
+                    flavor.getFlavorName() + " is out of stock. Sorry!");
             }
         });
 
