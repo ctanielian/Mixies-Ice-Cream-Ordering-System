@@ -20,9 +20,6 @@ public class MixiesAppFrame extends JFrame {
     // Service layer used for all business logic and data access
     private final MixiesService service;
 
-    // Currently logged-in employee
-    private final Employee loggedInEmployee;
-
     // Tabbed pane for switching between different views
     private final JTabbedPane tabs;
 
@@ -32,7 +29,6 @@ public class MixiesAppFrame extends JFrame {
      * Constructor initializes the main application frame and UI components.
      */
     public MixiesAppFrame(Employee loggedInEmployee) {
-        this.loggedInEmployee = loggedInEmployee;
         this.service = new MixiesService();
         this.tabs = new JTabbedPane();
         this.ordersPanel = new OrdersPanel(service);
@@ -66,11 +62,6 @@ public class MixiesAppFrame extends JFrame {
         JPanel rightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         rightPanel.add(managerAccessButton);
         topPanel.add(rightPanel, BorderLayout.EAST);
-
-        // Button to open kiosk menu
-        JButton kioskMenuButton = new JButton("Kiosk Menu");
-        kioskMenuButton.addActionListener(e -> openKioskMenu());
-        rightPanel.add(kioskMenuButton);
 
         // Add components to frame
         add(topPanel, BorderLayout.NORTH);
@@ -121,23 +112,6 @@ public class MixiesAppFrame extends JFrame {
         } catch (NumberFormatException ex) {
             // Handle invalid number input
             JOptionPane.showMessageDialog(this, "Invalid employee ID.");
-        }
-    }
-
-    /**
-     * Opens the kiosk menu tab for viewing available ice cream flavors.
-     * If the tab already exists, it switches to it instead of creating a new one.
-     */
-    private void openKioskMenu() {
-        int existingTabIndex = tabs.indexOfTab("Kiosk Menu");
-
-        if (existingTabIndex == -1) {
-            // Create new Kiosk Menu tab
-            tabs.addTab("Kiosk Menu", new KioskPanel(service, loggedInEmployee, ordersPanel));
-            tabs.setSelectedIndex(tabs.getTabCount() - 1);
-        } else {
-            // Switch to existing tab
-            tabs.setSelectedIndex(existingTabIndex);
         }
     }
 }
