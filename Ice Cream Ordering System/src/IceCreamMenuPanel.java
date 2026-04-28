@@ -5,14 +5,22 @@ import java.awt.*;
 // Displays all available ice cream flavors
 // Implementing a grid layout and scrollablity
 public class IceCreamMenuPanel extends JPanel {
+    
     // Service used to fetch flavor data
     public final MixiesService service;
+
+    // Shared kiosk session (stores selected flavor)
+    private final KioskSession session;
+
+    // Navigator used to switch between kiosk screens
+    private final KioskNavigator navigator;
     
     // Main panel
-    public IceCreamMenuPanel(MixiesService service) {
+    public IceCreamMenuPanel(MixiesService service, KioskSession session, KioskNavigator navigator) {
         this.service = service;
+        this.session = session;
+        this.navigator = navigator;
 
-        // Set main layout and background color
         setLayout(new BorderLayout());
         setBackground(new Color(245, 245, 245));
         
@@ -23,10 +31,7 @@ public class IceCreamMenuPanel extends JPanel {
         // Cart button
         JButton cartButton = new JButton("Cart/Checkout");
         
-        // Cart button action
-        cartButton.addActionListener(e -> {
-            // go to cart panel
-        });        
+        cartButton.addActionListener(e -> navigator.showCart());        
 
         // Panel for flavor cards
         JPanel flavorGrid = new JPanel(new GridBagLayout());
@@ -138,7 +143,12 @@ public class IceCreamMenuPanel extends JPanel {
         addButton.addActionListener(e -> {
             // Check stock before adding
             if (flavor.getStockLevel() > 0) {
-                // Open customization panel
+
+                // Store selected flavor in session
+                session.setSelectedFlavor(flavor);
+
+                // Navigate to customization panel
+                navigator.showCustomize();
 
             } else {
                 // Show message if flavor is out of stock
