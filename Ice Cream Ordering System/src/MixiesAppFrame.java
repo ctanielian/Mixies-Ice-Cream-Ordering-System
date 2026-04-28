@@ -154,5 +154,6 @@ public class MixiesAppFrame extends JFrame {
         // Reset employee access button
         employeeAccessButton.setText("Employee Access");
         employeeAccessButton.removeActionListener(employeeAccessButton.getActionListeners()[0]);
+        employeeAccessButton.addActionListener(e -> employeeIDPrompt());
     }
 }
