@@ -1,4 +1,5 @@
 import java.awt.*;
+import javax.swing.*;
 
 /**
  * KioskPanel represents the customer-facing kiosk UI.
